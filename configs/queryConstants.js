@@ -1,5 +1,5 @@
 const getContractsQuery =  `SELECT * FROM collection_service.contracts`;
-const getChampionsWithoutContractQuery = `select * from (
+const getChampionsWithoutContractQuery = (days=30) => `select * from (
   SELECT  
   distinct on (ch.max_champion_id) ch.max_champion_id ,
   (u.first_name || ' ' ||  u.last_name ) AS champion_name,
@@ -33,10 +33,11 @@ const getChampionsWithoutContractQuery = `select * from (
   left join vehicle_service.hpvs hp on v.hpv_id = hp.id
   left join max_third_party_service.virtual_accounts va on va.account_reference::text = ch.id::text
   WHERE
-  cast(ch.created_at AS date)  >= CURRENT_DATE - 30
+  cast(ch.created_at AS date)  >= CURRENT_DATE - ${days}
   AND v.champion_id IS NOT NULL
-  and co.daily_remit is null
+  AND co.daily_remit is null
   ) al
+  ORDER BY al.champion_createdate ASC
   `;
 
 export {

@@ -4,8 +4,9 @@ import { getChampionsWithoutContract } from "../model/collectionModel.js";
 import appConfig from '../configs/appConfig.js';
 
 const createContractController = async (request, response) => {
-  const requestQueue = [];
-  const championsWithoutContract = await getChampionsWithoutContract();
+  const {query} = request;
+  const days = query?.days || 10;
+  const championsWithoutContract = await getChampionsWithoutContract(days);
   const result = [];
   if (championsWithoutContract?.length > 0) {
     for (let i =0; i< 1; i++) {
@@ -34,7 +35,6 @@ const createContractController = async (request, response) => {
           body: JSON.stringify(payload),
         });
         const jsonRes = await res.json();
-        console.log(res.status);
         if (res.status === 200) {
           output.status = "Success"
         } else {
@@ -42,7 +42,7 @@ const createContractController = async (request, response) => {
         }
       } catch (e) {
         output.status = "Error"
-        output.errorMessage = e.message;
+        output.error_message = e.message;
       }
       result.push(output)
     }
