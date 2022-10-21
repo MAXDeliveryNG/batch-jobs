@@ -10,6 +10,8 @@ const pool = new Pool({
   database: config.db.database,
   password: config.db.password,
   port: config.db.port,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
 export default pool;
