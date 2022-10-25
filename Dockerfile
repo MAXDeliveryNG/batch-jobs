@@ -17,5 +17,6 @@ RUN npm install
 # Bundle app source
 COPY . /home/app/batch-app
 
-EXPOSE 3000
-CMD [ "node", "index.js" ]
+# set this on env variables
+EXPOSE 8080
+CMD node -r dotenv/config index.js

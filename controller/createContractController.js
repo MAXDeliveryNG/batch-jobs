@@ -39,9 +39,9 @@ const createContractController = async (request, response) => {
       };
       console.log("Payload:::", JSON.stringify(payload));
       try {
-        const res = await fetch(`${appConfig.dev.apiURL}/contracts`, {
+        const res = await fetch(`${appConfig.apiURL}/contracts`, {
           method: 'POST',
-          headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${appConfig.dev.authToken}` },
+          headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${appConfig.authToken}` },
           body: JSON.stringify(payload),
         });
         const jsonRes = await res.json();
