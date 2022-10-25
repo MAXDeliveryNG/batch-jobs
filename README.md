@@ -32,7 +32,7 @@ API_URL=https://api.staging.max.ng/collection/v1
 ```
 ⚠️ Note that authToken is subjected to change at times and also do not commit the .env file
 
-Run
+### Run
 To run the project please run
 ```
 npm run start
