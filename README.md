@@ -37,4 +37,5 @@ To run the project please run
 ```
 npm run start
 ```
-And then you can call the API e.g http://localhost:3000/create-contracts?days=30 days: This will ensure how many days of data you want to retrieve where champions don't have active contracts
+And then you can call the API e.g http://localhost:3000/create-contracts?days=30 
+days: This will ensure how many days of data you want to retrieve where champions don't have active contracts
