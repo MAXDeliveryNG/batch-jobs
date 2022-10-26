@@ -1,0 +1,128 @@
+version: 2.1
+orbs:
+  slack: circleci/slack@3.4.2
+jobs:
+  #build conf
+  build:
+    working_directory: ~/maintenance-service
+    docker:
+            - image: circleci/node:erbium
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+          
+                  # initializing slack orb variables
+                  echo export GIT_COMMIT_ID=$( git log -1 --format=format:"%h" ) >> $BASH_ENV
+                  echo export GIT_COMMIT_DESC=$( git log --oneline --format=%B -n 1 HEAD | head -n 1 | sed 's/^/"/;s/$/"/' ) >> $BASH_ENV
+                  echo export GIT_COMMIT_AUTHOR=$( git log -1 --pretty=format:'%an' ) >> $BASH_ENV
+                  echo export BACKTICK=\\\` >> $BASH_ENV
+                  source $BASH_ENV
+                  sudo npm i -g typescript
+                  sudo npm install -g ts-node 
+                  npm install
+      #sending status to Slack.      
+      - slack/status:
+          failure_message: ':red_circle: ${CIRCLE_JOB} failed! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *pushed by* ${GIT_COMMIT_AUTHOR}'
+          success_message: ':tada: ${CIRCLE_JOB} succeeded! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *pushed by* ${GIT_COMMIT_AUTHOR}'
+          webhook: ${SLACK_WEBHOOK_URL}
+          
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./node_modules
+
+  build_image:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ./
+      - setup_remote_docker
+      - run:
+          name: Build and push image
+          command: |
+            chmod u+x ./build_image.sh
+          
+            ./build_image.sh
+            
+      #sending status to Slack.      
+      - slack/status:
+          failure_message: ":red_circle: ${CIRCLE_JOB} failed! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *merged by* ${GIT_COMMIT_AUTHOR}"
+          success_message: ":tada: Image push to GCP succeeded! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n Image: $IMAGE_URL \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *merged by* ${GIT_COMMIT_AUTHOR}"
+          webhook: ${SLACK_WEBHOOK_URL}
+
+  deploy:
+    docker:
+      - image: kiwigrid/gcloud-kubectl-helm
+
+    working_directory: ~/maintenance-service
+    
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ./
+      - run:
+          name: Deploy to Kubernetes
+          command: |
+            chmod u+x ./deploy.sh
+          
+            export CHARTNAME="maintenance-service"
+            
+            if [ $CIRCLE_BRANCH = "main" ] ; then
+              echo "Deploying to production cluster"
+              ./deploy.sh $CIRCLE_BRANCH $CHARTNAME
+            elif [ $CIRCLE_BRANCH = "staging" ] ; then
+              echo "Deploying image to staging cluster"
+              ./deploy.sh $CIRCLE_BRANCH $CHARTNAME
+            elif [ $CIRCLE_BRANCH = "dev" ] ; then
+              echo "Deploying image to dev cluster"
+              ./deploy.sh $CIRCLE_BRANCH $CHARTNAME
+            fi
+            
+            exit
+
+      #sending status to Slack.      
+      - slack/status:
+          failure_message: ':red_circle: ${CIRCLE_JOB} failed! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *merged by* ${GIT_COMMIT_AUTHOR}'
+          success_message: ':white_check_mark: :tada: ${CIRCLE_JOB} succeeded! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *merged by* ${GIT_COMMIT_AUTHOR}'
+          webhook: ${SLACK_WEBHOOK_URL} 
+          
+workflows:
+  version: 2.1
+  pipeline:
+    jobs:
+    - build:
+        context: max-env
+    # - test:
+    #     requires:
+    #       - build
+    - build_image:
+        context: max-env
+        requires:
+          - build
+          # - test
+        filters:
+          branches:
+            only:
+              - dev
+              - staging
+              - main
+    - deploy:
+        context: max-env
+        requires:
+          - build_image
+        filters:
+          branches:
+            only:
+              # - dev
+              - staging
+              - main
+
