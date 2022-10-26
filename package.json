@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "babel **/*.js -d dist",
+    "build": "echo 1",
     "start": "node -r dotenv/config index.js",
     "dev": "nodemon -r dotenv/config ./index.js"
   },

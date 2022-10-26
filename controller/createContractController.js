@@ -6,6 +6,7 @@ import appConfig from '../configs/appConfig.js';
 const createContractController = async (request, response) => {
   const {query} = request;
   const days = query?.days || 10;
+
   const result = [];
   let championsWithoutContract = [];
   try {
@@ -17,9 +18,18 @@ const createContractController = async (request, response) => {
       message: e.message,
     })
   }
-  
-  if (championsWithoutContract?.length > 0) {
-    for (let i=0; i<championsWithoutContract.length; i++) {
+  const championsWithoutContractLength = championsWithoutContract?.length;
+  if (championsWithoutContractLength > 0) {
+
+    let noOfRecords = 0;
+    if (query?.noOfRecords === "all" || query?.noOfRecords >= championsWithoutContractLength) {
+      noOfRecords = championsWithoutContractLength
+    } else if (query?.noOfRecords <= championsWithoutContractLength) {
+      noOfRecords = query?.noOfRecords;
+    }
+
+    console.log("noOfRecords to be process:: ", noOfRecords);
+    for (let i=0; i<noOfRecords; i++) {
       const item = championsWithoutContract[i];
       const output = {
         "champion_id": item?.champion_uuid,
