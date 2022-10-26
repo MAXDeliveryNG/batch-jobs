@@ -24,7 +24,6 @@ jobs:
                   sudo npm i -g typescript
                   sudo npm install -g ts-node 
                   npm install
-                  npm run build 
       #sending status to Slack.      
       - slack/status:
           failure_message: ':red_circle: ${CIRCLE_JOB} failed! \n *${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}* \n ${BACKTICK}${GIT_COMMIT_ID}${BACKTICK} - ${GIT_COMMIT_DESC} \n *pushed by* ${GIT_COMMIT_AUTHOR}'
