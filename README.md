@@ -43,3 +43,4 @@ days: This will ensure how many days of data you want to retrieve where champion
 noOfRecords: "all or numeric value" -> all means all records will be process for the given no of days 
 or else provide a numeric value to process i.e 1 to infinity
 ```
+Stagging URL: https://api.staging.max.ng/batch_job/create-contracts?days=1000&noOfRecords=2
