@@ -4,7 +4,7 @@ orbs:
 jobs:
   #build conf
   build:
-    working_directory: ~/maintenance-service
+    working_directory: ~/batch-jobs
     docker:
             - image: circleci/node:erbium
 
@@ -61,7 +61,7 @@ jobs:
     docker:
       - image: kiwigrid/gcloud-kubectl-helm
 
-    working_directory: ~/maintenance-service
+    working_directory: ~/batch-jobs
     
     steps:
       - checkout
@@ -74,7 +74,7 @@ jobs:
           command: |
             chmod u+x ./deploy.sh
           
-            export CHARTNAME="maintenance-service"
+            export CHARTNAME="batch-jobs"
             
             if [ $CIRCLE_BRANCH = "main" ] ; then
               echo "Deploying to production cluster"
