@@ -1,6 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from "dotenv";
+import schedule from "node-schedule";
+
+import initCronJob from "./cronjob.js";
 
 dotenv.config();
 
@@ -29,4 +32,10 @@ app.get('/create-contracts', createContractController);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
+  initCronJob();
+  process.on('SIGINT', () => { 
+    console.log("****** process stopped removed all scheduled jobs ******");
+    schedule.gracefulShutdown()
+    .then(() => process.exit(0))
+  });
 });
