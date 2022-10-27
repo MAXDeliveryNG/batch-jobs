@@ -4,7 +4,7 @@ import schedule from "node-schedule";
 const postSlackMessage = async (message) => {
 
   try {
-    const response = await fetch('https://hooks.slack.com/services/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', {
+    const response = await fetch(process.env.SLACK_WEBHOOK_URL, {
       method: 'post',
       body: JSON.stringify({
         "blocks": [
@@ -46,18 +46,24 @@ const postSlackMessage = async (message) => {
         ]
       })
     });
-    // fetch("https://hooks.slack.com/services/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", {text: message})
+    const resText = await response.text();
+    if (resText !== "ok") {
+      throw new Error(resText);
+    } else {
+      console.log(resText);
+      console.log("Successfully posted message to slack channel")
+    }
   } catch(e) {
-    console.log(e.message)
+    console.log(e.message);
+    console.log("Failed to post message to slack channel")
   }
 };
 
 const initCronJob = () => {
   // nodejs schedule
   const rule = new schedule.RecurrenceRule();
-  rule.hour = 0; // hour of the day at which it will trigger
-  rule.minute = 15;
-  rule.tz = 'UTC+1'; // UTC+1 === WAT timezone (West Africa Time)
+  rule.hour = 23; // hour of the day at which it will trigger
+  rule.tz = 'Africa/Lagos'; // UTC+1 === WAT timezone (West Africa Time)
 
   const job = schedule.scheduleJob(rule, async () => {
     const startTime = (new Date()).getTime();
