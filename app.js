@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from "dotenv";
 import schedule from "node-schedule";
+import fetch from "node-fetch";
 
 import initCronJob from "./cronjob.js";
 
@@ -29,6 +30,20 @@ app.get('/', (request, response) => {
 });
 
 app.get('/create-contracts', createContractController);
+
+app.get('/test-slack', async (req, res) => {
+  let resBody="";
+  try {
+    const res = await fetch(process.env.SLACK_WEBHOOK_URL, {
+      method: 'post',
+      body: JSON.stringify({text: "OK"})
+    });
+    resBody = await res.text();
+  } catch (e) {
+    console.log(e.message)
+  }
+  res.json({status: resBody});
+});
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
