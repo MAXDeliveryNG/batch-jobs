@@ -24,6 +24,10 @@ const postSlackMessage = async (message) => {
               },
               {
                 "type": "mrkdwn",
+                "text": `*Environment:*\n${message.env}`
+              },
+              {
+                "type": "mrkdwn",
                 "text": `*Runtime:*\n${message.runTime}`
               },
               {
@@ -69,6 +73,7 @@ const initCronJob = () => {
     const startTime = (new Date()).getTime();
     const message = {
       status: "",
+      env: (process?.env?.DB_DATABASE?.indexOf("v2staging") > -1) ? "Staging" : "Production",
       runTime: new Date(),
       totalTimeTaken: 0,
       totalNoOfRecordProcessed: 0,
