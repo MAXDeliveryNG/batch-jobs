@@ -47,7 +47,7 @@ app.get('/test-slack', async (req, res) => {
 
 app.get("/check-localhost", async (req, res) => {
   try{
-    const r = await fetch("http://127.0.0.1:4020");
+    const r = await fetch("http://localhost:4020");
     const resJSON = await r.json();
     res.json(resJSON);
   } catch(e) {
