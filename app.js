@@ -46,9 +46,13 @@ app.get('/test-slack', async (req, res) => {
 });
 
 app.get("/check-localhost", async (req, res) => {
-  const r = await fetch("http://127.0.0.1:80");
-  const resJSON = await r.json();
-  res.json(resJSON);
+  try{
+    const r = await fetch("http://127.0.0.1:80");
+    const resJSON = await r.json();
+    res.json(resJSON);
+  } catch(e) {
+    res.json({error: e.message});
+  }
 });
 
 app.listen(port, () => {
