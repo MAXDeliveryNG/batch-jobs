@@ -69,7 +69,7 @@ const initCronJob = () => {
   rule.hour = 23; // hour of the day at which it will trigger
   rule.tz = 'Africa/Lagos'; // UTC+1 === WAT timezone (West Africa Time)
 
-  const job = schedule.scheduleJob("*/5 * * * *", async () => {
+  const job = schedule.scheduleJob(rule, async () => {
     const startTime = (new Date()).getTime();
     const message = {
       status: "",
