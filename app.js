@@ -45,6 +45,16 @@ app.get('/test-slack', async (req, res) => {
   res.json({status: resBody});
 });
 
+app.get("/check-localhost", async (req, res) => {
+  try{
+    const r = await fetch("http://127.0.0.1:80");
+    const resJSON = await r.json();
+    res.json(resJSON);
+  } catch(e) {
+    res.json({error: e.message});
+  }
+});
+
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
   initCronJob();
