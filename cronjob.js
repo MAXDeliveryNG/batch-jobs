@@ -81,7 +81,7 @@ const initCronJob = () => {
     };
     try {
       console.time('TimeTakenCronJob');
-      const result = await fetch(`http://localhost:8080/create-contracts?days=30&noOfRecords=10`);
+      const result = await fetch(`http://localhost:4020/create-contracts?days=30&noOfRecords=10`);
       const responseJSON = await result.json();
       message.status="Success";
       message.totalNoOfRecordProcessed = responseJSON?.length || 0;
