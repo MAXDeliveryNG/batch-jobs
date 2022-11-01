@@ -9,6 +9,7 @@ import initCronJob from "./cronjob.js";
 dotenv.config();
 
 import {createContractController} from "./controller/createContractController.js";
+import {getChamps} from "./controller/createVNumanController.js";
 
 import appConfig from './configs/appConfig.js';
 
@@ -30,6 +31,7 @@ app.get('/', (request, response) => {
 });
 
 app.get('/create-contracts', createContractController);
+app.post('/getchamps', getChamps);
 
 app.get('/test-slack', async (req, res) => {
   let resBody="";
