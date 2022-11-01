@@ -13,8 +13,6 @@ import {getChamps} from "./controller/createVNumanController.js";
 
 import appConfig from './configs/appConfig.js';
 
-console.log(appConfig);
-
 const app = express();
 const port = appConfig.PORT;
 

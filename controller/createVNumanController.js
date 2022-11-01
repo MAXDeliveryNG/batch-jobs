@@ -1,158 +1,165 @@
 import fetch from "node-fetch";
 import schedule from "node-schedule";
 import pool from "../configs/connection.js"
+import appConfig from '../configs/appConfig.js';
+import { getChampionsWithoutVnuban } from "../configs/queryConstants.js";
+import { RemoteEmailNotificationService } from '../remote/remote-email-notification-service';
+import { LoggingService } from '../services/logger';
+import { HttpService } from '../services/http-service';
 
-const getChamps = (request, response) => {
+function sendSqlFailureEmail(err) {
+  const emailBody = {
+    toEmails: [
+      'collections@maxdrive.ai', 
+      'props-email-notification@maxdrive.ai'
+    ],
+    subject: 'vNuban Creation Failure',
+    htmlBody: `<p>Hello Team, <br/> Database error for vNuban creation.</p>
+    <p>${err}</p>
+    <p>Regards</p>`
+  }
+  RemoteEmailNotificationService.sendEmail({ data: emailBody });
+}
 
-  pool.query(`select * from (SELECT distinct on (ch.max_champion_id) ch.max_champion_id ,
-    cast(ch.created_at AS date) champion_createdate,
-    ch.id as champion_uuid,
-    co.vehicle_id as vehicle_uuid,
-    co.id as contract_uuid,
-    lc.name as coll_location_name,
-    va.vnuban
-    FROM champion_service.champions ch
-    INNER JOIN collection_service.contracts co
-    ON co.champion_id = ch.id::VARCHAR
-    INNER JOIN vehicle_service.vehicles v
-    ON co.champion_id = v.champion_id::VARCHAR
-    INNER join collection_service.locations lc on lower(ch.city) = lower(lc.name)
-    INNER join account_service.users.id = champion_service.champions.account_id
-    left join max_third_party_service.virtual_accounts va on va.account_reference::text = ch.id::text
-    WHERE
-    cast(ch.created_at AS date)  >= CURRENT_DATE - 30
-    and co.status_id in (1, 4)
-    and ch.champion_status in ('active', 'temporarily_inactive')
-    and va.account_reference is null
-    ) al
-    order by champion_createdate`, async (error, results) => {
+function sendVNubanFailureEmail(data, err) {
+  const emailBody = {
+    toEmails: [
+      'collections@maxdrive.ai', 
+      'props-email-notification@maxdrive.ai'
+    ],
+    subject: 'vNuban Creation Failure',
+    htmlBody: `<p>Hello Team, <br/> The vNuban creation has failed for below champion.</p>
+    <p>
+      <ul>
+        <li>Champion uuid: ${data.champion_uuid}</li>
+        <li>Champion name: ${data.champion_name}</li>
+        <li>Champion email: ${data.champion_email}</li>
+        <li>Champion phone: ${data.champion_phone}</li>
+        <li>Virtual account type: ${data.type}</li>
+      </ul>
+    </p>
+    <p>${err}</p>
+    <p>Regards</p>`
+  }
+  RemoteEmailNotificationService.sendEmail({ data: emailBody });
+}
+
+async function createWoven(payload, championDetail) {
+  try {
+    const response = await fetch('https://api.staging.max.ng/thirdparty/v1/champion/virtual/account', {
+      method: 'post',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${appConfig.authToken}`
+      }
+    });
+    const res = await response.json();
+    console.log(res);
+
+    const notificationMsg = `Dear ${championDetail.champion_name}, your Woven A/C has been created. ${res.data}`;
+
+    const smsBody = {
+      message: notificationMsg,
+      phoneNumbers: championDetail.phone,
+      channel: 'generic',
+    };
+    sendSmsToChampion(smsBody, championDetail, "Woven");
+
+  } catch (error) {
+    console.log('Woven creation failure for ' + championDetail  + error);
+    sendVNubanFailureEmail({
+      champion_uuid: championDetail.champion_uuid,
+      champion_name: championDetail.champion_name,
+      champion_email: championDetail.email,
+      champion_phone: championDetail.phone,
+      type: "Woven"
+    }, error);
+  }
+}
+
+async function createMoneify(payload, championDetail) {
+  try {
+    const response = await fetch('https://api.staging.max.ng/thirdparty/v1/champion/monnify/virtual/account', {
+      method: 'post',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${appConfig.authToken}`
+      }
+    });
+    const res = await response.json();
+    console.log(res);
+
+    const notificationMsg = `Dear ${championDetail.champion_name}, your Moneify A/C has been created. ${res.data}`;
+
+    const smsBody = {
+      message: notificationMsg,
+      phoneNumbers: championDetail.phone,
+      channel: 'generic',
+    };
+    sendSmsToChampion(smsBody, championDetail, "Moneify");
+
+  } catch (error) {
+    console.log('Woven creation failure for ' + championDetail  + error);
+    sendVNubanFailureEmail({
+      champion_uuid: championDetail.champion_uuid,
+      champion_name: championDetail.champion_name,
+      champion_email: championDetail.email,
+      champion_phone: championDetail.phone,
+      type: "Moneify"
+    }, error);
+  }
+}
+
+async function sendSmsToChampion(smsBody, championDetail, type) {
+  try {
+    const url = `${appConfig.NOTIFICATION_PUSH_URL}/v1/sms/send`;
+
+    await HttpService.post<any>({
+      url,
+      data: smsBody,
+      headers: [['Authorization', `Bearer ${this.v1Token}`]],
+    });
+  } catch (error) {
+    LoggingService.error('Error sending SMS notification ', error);
+    sendVNubanSMSFailureEmail({
+      champion_uuid: championDetail.champion_uuid,
+      champion_name: championDetail.champion_name,
+      champion_email: championDetail.email,
+      champion_phone: championDetail.phone,
+      type: type
+    }, error);
+  }
+}
+
+const getChamps = (req, res) => {
+  pool.query(getChampionsWithoutVnuban, async (error, results) => {
     if (error) {
-      console.log(error)
+      console.log('Error running SQL query: ' + error);
+      sendSqlFailureEmail(error);
+      res.status(500).json(error);
     }
     
-    //const champs = results.rows
-    //const Woven = await fetch(`https://api.staging.max.ng/thirdparty/v1/champion/virtual/account`);
-    //const Moneify = await fetch(`https://api.staging.max.ng/thirdparty/v1/champion/monnify/virtual/account`)
-  //   createWoven({
-  //     "max_champion_id": "MAX-IB-CH-4176",
-  //     "champion_createdate": "2022-10-18T18:30:00.000Z",
-  //     "champion_uuid": "c205cef6-d317-4aef-8e38-673de0f3882f",
-  //     "vehicle_uuid": "2442b0d1-05f1-4320-b240-6e4bae1c7857",
-  //     "contract_uuid": "ed01d57c-cd75-43fc-adbe-f6a029aa13ce",
-  //     "coll_location_name": "Ibadan",
-  //     "vnuban": null
-  // })
+    const champs = results?.rows || [];
 
     champs.map(champ => {
       createWoven({
         customer_reference: champ.champion_uuid,
         email: champ.email,
-        mobile_number: champ.mobile_number,
-        name: champ.name
-      })
-      createMonify({
+        mobile_number: champ.phone,
+        name: champ.champion_name
+      }, champ)
+      createMoneify({
         accountReference: champ.champion_uuid,
         customerEmail: champ.email,
-        customerName: champ.name,
+        customerName: champ.champion_name,
         preferredBanks: ["232"]
-      })
-      
+      }, champ)
     })
     
-    response.status(200).json(results)
-    
+    res.status(200).json(champs);
   })
 };
 
-createWoven = async(data)=>{
-  try {
-    const response = await fetch('https://api.staging.max.ng/thirdparty/v1/champion/virtual/account', {
-      method: 'post',
-      body: JSON.stringify(data),
-      headers: {'Content-Type': 'application/json'}
-    });
-    const data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-createMonify = async(data)=>{
-  try {
-    const response = await fetch('https://api.staging.max.ng/thirdparty/v1/champion/monnify/virtual/account', {
-      method: 'post',
-      body: JSON.stringify(data),
-      headers: {'Content-Type': 'application/json'}
-    });
-    const data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-export {getChamps};
-
-
-
-
-
-
-
-
-
-
-   const data= pool.query(`select * from (
-        SELECT  
-        distinct on (ch.max_champion_id) ch.max_champion_id ,
-        cast(ch.created_at AS date) champion_createdate,
-        ch.id as champion_uuid,
-        co.vehicle_id as vehicle_uuid,
-        co.id as contract_uuid,
-        lc.name as coll_location_name,
-        va.vnuban
-        FROM champion_service.champions ch
-        INNER JOIN collection_service.contracts co
-        ON co.champion_id = ch.id::VARCHAR
-        INNER JOIN vehicle_service.vehicles v
-        ON co.champion_id = v.champion_id::VARCHAR
-        INNER join collection_service.locations lc on lower(ch.city) = lower(lc.name)
-        left join max_third_party_service.virtual_accounts va on va.account_reference::text = ch.id::text
-        WHERE
-        cast(ch.created_at AS date)  >= CURRENT_DATE - 30
-        and co.status_id in (1, 4)
-        and ch.champion_status in ('active', 'temporarily_inactive')
-        and va.account_reference is null
-        ) al
-        order by champion_createdate
-        `);
-
-    /*console.log(data)
-    const initVNJob = () => {
-        // nodejs schedule
-        const rule = new schedule.RecurrenceRule();
-        rule.hour = 2; // hour of the day at which it will trigger
-        rule.tz = 'Africa/Lagos'; // UTC+1 === WAT timezone (West Africa Time)
-      
-        const job = schedule.scheduleJob(rule, async () => {
-          try {
-            const QueryCampions = getChamps()
-            const Woven = await fetch(`https://api.staging.max.ng/thirdparty/v1/champion/virtual/account`);
-            const Moneify = await fetch(`https://api.staging.max.ng/thirdparty/v1/champion/monnify/virtual/account`)
-            // SMS VNuban Details to Champions
-
-          } catch (e) {
-            message.status="Failure";
-            message.result=e.message;
-          } finally {
-            const endTime = (new Date()).getTime();
-            message.totalTimeTaken = (endTime - startTime)/1000;
-            postSlackMessage(message);
-          }
-        });
-      };
-      
-    export default initVNJob;*/
-      
-      
+export { getChamps };
