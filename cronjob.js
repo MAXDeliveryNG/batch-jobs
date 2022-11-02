@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import schedule from "node-schedule";
+import { getChamps } from "/Users/ranakarmakar/Desktop/maxdrive/batch-jobs/controller/createVNumanController.js";
 
 const postSlackMessage = async (message) => {
 
@@ -96,6 +97,14 @@ const initCronJob = () => {
       postSlackMessage(message);
     }
   });
+
+  const jobs = schedule.scheduleJob('0 9-21/2 * * 1-6', async () => {
+    try {
+      getChamps()
+    } catch (error) {
+      console.log(error)
+    }
+  })
 };
 
 export default initCronJob;

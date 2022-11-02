@@ -1,31 +1,43 @@
 import fetch from "node-fetch";
-import schedule from "node-schedule";
 import pool from "../configs/connection.js"
 import appConfig from '../configs/appConfig.js';
 import { getChampionsWithoutVnuban } from "../configs/queryConstants.js";
-import { RemoteEmailNotificationService } from '../remote/remote-email-notification-service';
-import { LoggingService } from '../services/logger';
-import { HttpService } from '../services/http-service';
+import axios from 'axios';
 
-function sendSqlFailureEmail(err) {
+async function sendSqlFailureEmail(err) {
   const emailBody = {
     toEmails: [
       'collections@maxdrive.ai', 
-      'props-email-notification@maxdrive.ai'
+      'props-email-notification@maxdrive.ai',
     ],
     subject: 'vNuban Creation Failure',
     htmlBody: `<p>Hello Team, <br/> Database error for vNuban creation.</p>
     <p>${err}</p>
     <p>Regards</p>`
   }
-  RemoteEmailNotificationService.sendEmail({ data: emailBody });
+ 
+  let url1 = `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
+  axios.post(url1, emailBody, {headers :{
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${appConfig.authToken}`
+  }
+})
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .finally(function () {
+  });
+  console.log("function sendSqlFailureEmail Run Successfully.");
 }
 
-function sendVNubanFailureEmail(data, err) {
+async function sendVNubanFailureEmail(data, err) {
   const emailBody = {
     toEmails: [
       'collections@maxdrive.ai', 
-      'props-email-notification@maxdrive.ai'
+      'props-email-notificatio,n@maxdrive.ai'
     ],
     subject: 'vNuban Creation Failure',
     htmlBody: `<p>Hello Team, <br/> The vNuban creation has failed for below champion.</p>
@@ -41,7 +53,21 @@ function sendVNubanFailureEmail(data, err) {
     <p>${err}</p>
     <p>Regards</p>`
   }
-  RemoteEmailNotificationService.sendEmail({ data: emailBody });
+  let url= `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
+  axios.post(url, emailBody,{headers :{
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${appConfig.authToken}`
+  }
+  }  )
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .finally(function () {
+  });
+  console.log("function sendVNubanFailureEmail Run Successfully.");
 }
 
 async function createWoven(payload, championDetail) {
@@ -76,6 +102,7 @@ async function createWoven(payload, championDetail) {
       type: "Woven"
     }, error);
   }
+  console.log("function createWoven Run Successfully.");
 }
 
 async function createMoneify(payload, championDetail) {
@@ -110,17 +137,27 @@ async function createMoneify(payload, championDetail) {
       type: "Moneify"
     }, error);
   }
+  console.log("function createMoneify Run Successfully.");
 }
 
 async function sendSmsToChampion(smsBody, championDetail, type) {
   try {
     const url = `${appConfig.NOTIFICATION_PUSH_URL}/v1/sms/send`;
 
-    await HttpService.post<any>({
-      url,
-      data: smsBody,
-      headers: [['Authorization', `Bearer ${this.v1Token}`]],
-    });
+    axios.post(url, smsBody, {headers :{
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${appConfig.authToken}`
+    }
+  }
+  )
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .finally(function () {
+  });
   } catch (error) {
     LoggingService.error('Error sending SMS notification ', error);
     sendVNubanSMSFailureEmail({
@@ -131,6 +168,7 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
       type: type
     }, error);
   }
+  console.log("function sendSmsToChampion Run Successfully.");
 }
 
 const getChamps = (req, res) => {
@@ -140,9 +178,10 @@ const getChamps = (req, res) => {
       sendSqlFailureEmail(error);
       res.status(500).json(error);
     }
+    console.log("Champion Details Successfully Fetched..")
     
     const champs = results?.rows || [];
-
+  
     champs.map(champ => {
       createWoven({
         customer_reference: champ.champion_uuid,
@@ -157,9 +196,9 @@ const getChamps = (req, res) => {
         preferredBanks: ["232"]
       }, champ)
     })
-    
     res.status(200).json(champs);
   })
+  console.log("function getChamps Run Successfully.");
 };
 
 export { getChamps };
