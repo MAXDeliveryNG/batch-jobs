@@ -1,6 +1,6 @@
 
 import pool from "../configs/connection.js";
-import {getContractsQuery, getChampionsWithoutContractQuery} from "../configs/queryConstants.js";
+import {getContractsQuery, getChampionsWithoutContractQuery, getChampionsWithoutContractVAMSQuery} from "../configs/queryConstants.js";
 
 const getContracts = (request, response) => {
   pool.query(getContractsQuery, (error, results) => {
@@ -17,7 +17,15 @@ const getChampionsWithoutContract = async (days) => {
   return result.rows || [];
 };
 
+const getChampionsWithoutContractForVAMS = async ({champion_id}) => {
+  const query = getChampionsWithoutContractVAMSQuery(champion_id);
+  console.log(query);
+  const result = await pool.query(query);
+  return result.rows || [];
+}
+
 export {
   getContracts,
-  getChampionsWithoutContract
+  getChampionsWithoutContract,
+  getChampionsWithoutContractForVAMS
 };
