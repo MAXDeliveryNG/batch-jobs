@@ -9,7 +9,7 @@ import initCronJob from "./cronjob.js";
 dotenv.config();
 
 import {createContractController} from "./controller/createContractController.js";
-import {getChamps} from "./controller/createVNumanController.js";
+import {getChamps} from "./controller/createVNubanController.js";
 
 import appConfig from './configs/appConfig.js';
 

@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import schedule from "node-schedule";
-import { getChamps } from "/Users/ranakarmakar/Desktop/maxdrive/batch-jobs/controller/createVNumanController.js";
+import { getChamps } from "./controller/createVNubanController.js";
 
 const postSlackMessage = async (message) => {
 

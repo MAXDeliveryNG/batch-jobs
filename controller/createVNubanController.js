@@ -182,20 +182,20 @@ const getChamps = (req, res) => {
     
     const champs = results?.rows || [];
   
-    champs.map(champ => {
-      createWoven({
-        customer_reference: champ.champion_uuid,
-        email: champ.email,
-        mobile_number: champ.phone,
-        name: champ.champion_name
-      }, champ)
-      createMoneify({
-        accountReference: champ.champion_uuid,
-        customerEmail: champ.email,
-        customerName: champ.champion_name,
-        preferredBanks: ["232"]
-      }, champ)
-    })
+    // champs.map(champ => {
+    //   createWoven({
+    //     customer_reference: champ.champion_uuid,
+    //     email: champ.email,
+    //     mobile_number: champ.phone,
+    //     name: champ.champion_name
+    //   }, champ)
+    //   createMoneify({
+    //     accountReference: champ.champion_uuid,
+    //     customerEmail: champ.email,
+    //     customerName: champ.champion_name,
+    //     preferredBanks: ["232"]
+    //   }, champ)
+    // })
     res.status(200).json(champs);
   })
   console.log("function getChamps Run Successfully.");
