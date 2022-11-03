@@ -75,6 +75,7 @@ const getChampionsWithoutContractVAMSQuery = (champion_id) => `select * from (
   left join max_third_party_service.virtual_accounts va on va.account_reference::text = ch.id::text
   WHERE
   v.champion_id='${champion_id}'
+  AND co.daily_remit is null
   ) al
   ORDER BY al.champion_createdate ASC
   `;
