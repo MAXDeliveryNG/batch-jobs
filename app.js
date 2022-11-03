@@ -9,6 +9,7 @@ import initCronJob from "./cronjob.js";
 dotenv.config();
 
 import {createContractController} from "./controller/createContractController.js";
+import {createContractForVAMSController} from "./controller/createContractForVAMSController.js";
 
 import appConfig from './configs/appConfig.js';
 
@@ -30,6 +31,8 @@ app.get('/', (request, response) => {
 });
 
 app.get('/create-contracts', createContractController);
+
+app.post('/v1/create-contract', createContractForVAMSController);
 
 app.get('/test-slack', async (req, res) => {
   let resBody="";
@@ -53,14 +56,19 @@ app.get("/check-localhost", async (req, res) => {
   } catch(e) {
     res.json({error: e.message});
   }
-});
+});   
+
+const shutDown = () => {
+  console.log("****** process stopped removed all scheduled jobs ******");
+  console.log(schedule.scheduledJobs);
+  schedule.gracefulShutdown()
+  .then(() => process.exit(0))
+};
+    
+process.on('SIGTERM', shutDown);
+process.on('SIGINT', shutDown);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
   initCronJob();
-  process.on('SIGINT', () => { 
-    console.log("****** process stopped removed all scheduled jobs ******");
-    schedule.gracefulShutdown()
-    .then(() => process.exit(0))
-  });
-});
+}); 
