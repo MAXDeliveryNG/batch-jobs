@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 
 import { getChampionsWithoutContractForVAMS } from "../model/collectionModel.js";
+import {publish} from "../utils/aws-sns.js";
 import appConfig from '../configs/appConfig.js';
 
 const createContractForVAMSController = async (request, response) => {
@@ -61,7 +62,15 @@ const createContractForVAMSController = async (request, response) => {
     output.message = e.message;
     output.statusCode = 500;
   } finally {
-    response.status(output.statusCode).json(output)
+    //publish to aws sns
+    publish({
+      ...output,
+      TopicArn: "arn:aws:sns:eu-west-2:048464312507:Contract",
+      championId: champion_id,
+      subject: `Contract creation status for champion id: ${champion_id}`
+    });
+    
+    response.status(output.statusCode).json(output);
   }
 };
 
