@@ -6,7 +6,6 @@ import appConfig from '../configs/appConfig.js';
 const createContractController = async (request, response) => {
   const {query} = request;
   const days = query?.days || 10;
-console.log(query);
   const result = [];
   let championsWithoutContract = [];
   try {

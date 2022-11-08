@@ -32,7 +32,6 @@ API_URL=https://api.staging.max.ng/collection/v1
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
-
 ```
 ⚠️ Note that authToken is subjected to change at times and also do not commit the .env file
 
