@@ -9,7 +9,12 @@ import initCronJob from "./cronjob.js";
 dotenv.config();
 
 import {createContractController} from "./controller/createContractController.js";
-import {createContractForVAMSController} from "./controller/createContractForVAMSController.js";
+import {
+      createContractForVAMSController,
+      subscribeToSNSTopicController, 
+      createContractFromTopicController,
+      unsubscribeToSNSTopicController
+    } from "./controller/createContractForVAMSController.js";
 
 import appConfig from './configs/appConfig.js';
 
@@ -33,6 +38,10 @@ app.get('/', (request, response) => {
 app.get('/create-contracts', createContractController);
 
 app.post('/v1/create-contract', createContractForVAMSController);
+
+app.post('/v1/sns-topic/subscribe', subscribeToSNSTopicController);
+app.post('/v1/sns-topic/unsubscribe', unsubscribeToSNSTopicController);
+app.post('/v1/create-contract-from-topic', bodyParser.text(), createContractFromTopicController);
 
 app.get('/test-slack', async (req, res) => {
   let resBody="";
@@ -58,11 +67,19 @@ app.get("/check-localhost", async (req, res) => {
   }
 });   
 
-const shutDown = () => {
+const shutDown = async () => {
   console.log("****** process stopped removed all scheduled jobs ******");
   console.log(schedule.scheduledJobs);
-  schedule.gracefulShutdown()
-  .then(() => process.exit(0))
+  try {
+    for (let item in schedule.scheduledJobs) {
+      await schedule.scheduledJobs[item].deleteFromSchedule();
+    }
+    await schedule.gracefulShutdown();
+  } catch(e) {
+    console.log(e.message)
+  } finally {
+    process.exit(0)
+  }
 };
     
 process.on('SIGTERM', shutDown);
