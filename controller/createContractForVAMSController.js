@@ -192,12 +192,12 @@ const createContractFromTopicController = async (request, response) => {
     const requestData = JSON.parse(request.body);
     console.log(requestData);
     if (requestData?.Type === "SubscriptionConfirmation") {
-      const payload = {
-        Token: requestData?.Token,
-        TopicArn: requestData?.TopicArn
+      const confirmRes = await fetch(requestData?.SubscribeURL);
+      if (confirmRes.status==200) {
+        output = {status: "success", message: "Subscription confirmed", statusCode: 200, ...confirmRes}
+      } else {
+        output = {status: "error", message: "Subscription confirmation error.", statusCode: 200, ...confirmRes}
       }
-      const confirmRes = await confirmSubscription(payload);
-      output = {status: "success", message: "Subscription confirmed", statusCode: 200, ...confirmRes}
     }
     if (requestData?.Type === "Notification") {
       const {champion_id} = JSON.parse(requestData?.Message);
