@@ -159,7 +159,7 @@ const createContractFromChampion = async (champion_id) => {
           lastUpdateTime: new Date().toISOString(),
           messageInfo: {
             documentStatus: "Activated",
-            origin: "cs"
+            origin: "lams"
           }
         }
         console.log("publish message :::", message)
@@ -174,7 +174,6 @@ const createContractFromChampion = async (champion_id) => {
       }
     } catch (e) {
       throw new Error(e.message);
-     
     }
   } catch (e) {
     output.status = "error"
