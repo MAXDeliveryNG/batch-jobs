@@ -11,10 +11,11 @@ const sns = new AWS.SNS();
 
 const publish = async (data) => {
   const params = {
-    Message: JSON.stringify(data),
+    Message: JSON.stringify(data?.message),
     Subject: data?.subject,
     TopicArn: awsConfig.topics[data?.topic]
   };
+  console.log(params);
   let publishRes = "";
   try {
     publishRes = await sns.publish(params).promise();

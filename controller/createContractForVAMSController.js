@@ -153,6 +153,22 @@ const createContractFromChampion = async (champion_id) => {
         output.message = "Contract created successfully."
         output.statusCode = 200;
         output.champion_id = item?.champion_uuid;
+
+        const message = {
+          champion_id: item?.champion_uuid,
+          lastUpdateTime: new Date().toISOString(),
+          messageInfo: {
+            documentStatus: "Activated",
+            origin: "cs"
+          }
+        }
+        console.log("publish message :::", message)
+        // publish here.
+        await publish({
+          topic: "contract",
+          subject: `Contract creation status for champion id: ${champion_id}`,
+          message
+        });
       } else {
         throw new Error(jsonRes.message);
       }
@@ -165,13 +181,7 @@ const createContractFromChampion = async (champion_id) => {
     output.message = e.message;
     output.statusCode = 500;
   } finally {
-    //publish to aws sns
-    await publish({
-      ...output,
-      topic: "contract",
-      championId: champion_id,
-      subject: `Contract creation status for champion id: ${champion_id}`
-    });
+    console.log(output);
     return output;
   }
 }

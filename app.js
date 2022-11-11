@@ -41,7 +41,7 @@ app.post('/v1/create-contract', createContractForVAMSController);
 
 app.post('/v1/sns-topic/subscribe', subscribeToSNSTopicController);
 app.post('/v1/sns-topic/unsubscribe', unsubscribeToSNSTopicController);
-app.post('/v1/create-contract-from-topic', bodyParser.text(), createContractFromTopicController);
+app.post('/v1/web-hook/create-contract-from-topic', bodyParser.text(), createContractFromTopicController);
 
 app.get('/test-slack', async (req, res) => {
   let resBody="";
@@ -87,5 +87,5 @@ process.on('SIGINT', shutDown);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
-  initCronJob();
+  //initCronJob();
 }); 
