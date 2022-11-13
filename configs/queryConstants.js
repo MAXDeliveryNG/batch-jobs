@@ -40,7 +40,7 @@ const getChampionsWithoutContractQuery = (days=30) => `select * from (
   ORDER BY al.champion_createdate ASC
   `;
 
-const getChampionsWithoutContractVAMSQuery = (champion_id) => `select * from (
+const getChampionsWithoutContractVAMSQuery = ({max_champion_id, max_vehicle_id}) => `select * from (
   SELECT  
   distinct on (ch.max_champion_id) ch.max_champion_id ,
   (u.first_name || ' ' ||  u.last_name ) AS champion_name,
@@ -74,7 +74,8 @@ const getChampionsWithoutContractVAMSQuery = (champion_id) => `select * from (
   left join vehicle_service.hpvs hp on v.hpv_id = hp.id
   left join max_third_party_service.virtual_accounts va on va.account_reference::text = ch.id::text
   WHERE
-  v.champion_id='${champion_id}'
+  ch.max_champion_id='${max_champion_id}'
+  AND v.max_vehicle_id='${max_vehicle_id}'
   AND co.daily_remit is null
   ) al
   ORDER BY al.champion_createdate ASC
