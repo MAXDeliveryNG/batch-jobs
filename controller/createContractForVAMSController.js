@@ -110,19 +110,19 @@ const unsubscribeToSNSTopicController = async (request, response) => {
   }
 };
 
-const createContractFromChampion = async (champion_id) => {
-  console.log("champion_id", champion_id);
+const createContractFromChampion = async (params) => {
+  console.log("params", params);
 
-  if (!champion_id) {
+  if (!params?.max_champion_id) {
    return response.status(400).json({status: "error", message: "champion_id id din't provided."});
   }
 
   const output = {};
   try {
-    const championsWithoutContract = await getChampionsWithoutContractForVAMS({champion_id});
+    const championsWithoutContract = await getChampionsWithoutContractForVAMS(params);
     console.log(championsWithoutContract);
     if (championsWithoutContract?.length === 0) {
-      throw new Error(`No record found with champion_id: ${champion_id}`);
+      throw new Error(`No record found with champion_id: ${params?.max_champion_id}`);
     }
     const item = championsWithoutContract[0];
     output.champion_id = item?.champion_uuid;
@@ -166,7 +166,7 @@ const createContractFromChampion = async (champion_id) => {
         // publish here.
         await publish({
           topic: "contract",
-          subject: `Contract creation status for champion id: ${champion_id}`,
+          subject: `Contract creation status for champion id: ${params?.max_champion_id}`,
           message
         });
       } else {
@@ -199,8 +199,9 @@ const createContractFromTopicController = async (request, response) => {
       }
     }
     if (requestData?.Type === "Notification") {
-      const {champion_id} = JSON.parse(requestData?.Message);
-      const data  = await createContractFromChampion(champion_id);
+      const {champion_id, vehicle_id} = JSON.parse(requestData?.Message);
+      console.log(champion_id, vehicle_id, "****************")
+      const data  = await createContractFromChampion({max_champion_id: champion_id, max_vehicle_id: vehicle_id});
       console.log("data", data);
       output = {...data}
     }

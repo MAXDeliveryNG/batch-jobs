@@ -17,8 +17,8 @@ const getChampionsWithoutContract = async (days) => {
   return result.rows || [];
 };
 
-const getChampionsWithoutContractForVAMS = async ({champion_id}) => {
-  const query = getChampionsWithoutContractVAMSQuery(champion_id);
+const getChampionsWithoutContractForVAMS = async (params) => {
+  const query = getChampionsWithoutContractVAMSQuery(params);
   console.log(query);
   const result = await pool.query(query);
   return result.rows || [];
