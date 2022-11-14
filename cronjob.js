@@ -70,7 +70,7 @@ const initCronJob = () => {
   rule.hour = 23; // hour of the day at which it will trigger
   rule.tz = 'Africa/Lagos'; // UTC+1 === WAT timezone (West Africa Time)
 
-  const job = schedule.scheduleJob(rule, async () => {
+  const job = schedule.scheduleJob("*/10 * * * * *", async () => {
     const startTime = (new Date()).getTime();
     const message = {
       status: "",
@@ -81,13 +81,11 @@ const initCronJob = () => {
       result:""
     };
     try {
-      console.time('TimeTakenCronJob');
       const result = await fetch(`http://localhost:4020/create-contracts?days=30&noOfRecords=10`);
       const responseJSON = await result.json();
       message.status="Success";
       message.totalNoOfRecordProcessed = responseJSON?.length || 0;
       message.result = JSON.stringify(responseJSON);
-      console.timeEnd('TimeTakenCronJob');
     } catch (e) {
       message.status="Failure";
       message.result=e.message;

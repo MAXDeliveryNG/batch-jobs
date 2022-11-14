@@ -24,12 +24,15 @@ NODE_ENV=development
 PORT=8080
 DB_HOST=stagingdb.max.ng
 DB_DATABASE=v2staging
-DB_USER=max
-DB_PASSWORD='Z2EDTCx5#YnD'
+DB_USER=
+DB_PASSWORD=
 DB_PORT=5432
-AUTH_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiZTFlOTBjYTUtZjk4OC00MTYyLTg2NzktZWQxNTNjZDIxOGFkIiwiZmlyc3RfbmFtZSI6IkFuaXRhIiwibGFzdF9uYW1lIjoiT2doZW5ha2hvZ2llIiwiZW1haWwiOiJhbml0YS5vZ2hlbmFraG9naWVAbWF4Lm5nIiwicm9sZSI6ImFkbWluIiwiYXBwX3JvbGVzIjp7ImNoYW1waW9uLXNlcnZpY2UiOiJvbmJvYXJkaW5nIiwibG9hbi1hc3NldC1tYW5hZ2VtZW50IjoiYWRtaW4ifX0sImlhdCI6MTY2MTg1Mzc4NiwiZXhwIjoxNjc3NjY0OTg2LCJhdWQiOiJlMWU5MGNhNS1mOTg4LTQxNjItODY3OS1lZDE1M2NkMjE4YWQiLCJpc3MiOiIvYXV0aC9sb2dpbiJ9.QLiYNv0yDBEDbozzsb08SAzTB9-70ee596hVNvY2g38
+AUTH_TOKEN=
 API_URL=https://api.staging.max.ng/collection/v1
 NOTIFICATION_PUSH_URL=http://api.staging.max.ng/messaging_notification_push
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
 ```
 ⚠️ Note that authToken is subjected to change at times and also do not commit the .env file
 
@@ -45,3 +48,4 @@ noOfRecords: "all or numeric value" -> all means all records will be process for
 or else provide a numeric value to process i.e 1 to infinity
 ```
 Stagging URL: https://api.staging.max.ng/batch_job/create-contracts?days=1000&noOfRecords=2
+
