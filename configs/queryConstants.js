@@ -67,7 +67,7 @@ const getChampionsWithoutContractQuery = (days=30) => `select * from (
     left join max_third_party_service.virtual_accounts va on va.account_reference::text = ch.id::text
     WHERE
     country.name = 'Nigeria'
-    and cast(ch.created_at AS date)  >= CURRENT_DATE - 30
+    and cast(ch.created_at AS date)  >= CURRENT_DATE - 3000
     and co.status_id in (1, 4)
     and ch.champion_status in ('active', 'temporarily_inactive')
     and va.account_reference is null
