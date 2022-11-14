@@ -23,13 +23,11 @@ async function sendSqlFailureEmail(err) {
   }
 })
   .then(function (response) {
-    console.log(response);
+    //console.log(response);
   })
   .catch(function (error) {
     console.log(error);
   })
-  .finally(function () {
-  });
   console.log("function sendSqlFailureEmail Run Successfully.");
 }
 
@@ -60,13 +58,11 @@ async function sendVNubanFailureEmail(data, err) {
   }
   }  )
   .then(function (response) {
-    console.log(response);
+    //console.log(response);
   })
   .catch(function (error) {
     console.log(error);
   })
-  .finally(function () {
-  });
   console.log("function sendVNubanFailureEmail Run Successfully.");
 }
 
@@ -81,13 +77,14 @@ async function createWoven(payload, championDetail) {
       }
     });
     const res = await response.json();
-    console.log(res);
+    //console.log(res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Woven A/C has been created. ${res.data}`;
 
     const smsBody = {
       message: notificationMsg,
-      phoneNumbers: championDetail.phone,
+      //phoneNumbers: championDetail.phone,
+      phoneNumbers: '+2349012634374',
       channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Woven");
@@ -116,13 +113,14 @@ async function createMoneify(payload, championDetail) {
       }
     });
     const res = await response.json();
-    console.log(res);
+    //console.log(res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Moneify A/C has been created. ${res.data}`;
 
     const smsBody = {
       message: notificationMsg,
-      phoneNumbers: championDetail.phone,
+      //phoneNumbers: championDetail.phone,
+      phoneNumbers: '+2349012634374',
       channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Moneify");
@@ -147,17 +145,14 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
     axios.post(url, smsBody, {headers :{
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${appConfig.authToken}`
-    }
-  }
-  )
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
-  .finally(function () {
-  });
+    }})
+    .then(function (response) {
+      //console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  
   } catch (error) {
     LoggingService.error('Error sending SMS notification ', error);
     sendVNubanSMSFailureEmail({
@@ -180,22 +175,24 @@ const getChamps = (req, res) => {
     }
     console.log("Champion Details Successfully Fetched..")
     
-    const champs = results?.rows || [];
+    //let champs = results?.rows || [];
+    let champs = [results?.rows[0]]
+    console.log(champs)
   
-    // champs.map(champ => {
-    //   createWoven({
-    //     customer_reference: champ.champion_uuid,
-    //     email: champ.email,
-    //     mobile_number: champ.phone,
-    //     name: champ.champion_name
-    //   }, champ)
-    //   createMoneify({
-    //     accountReference: champ.champion_uuid,
-    //     customerEmail: champ.email,
-    //     customerName: champ.champion_name,
-    //     preferredBanks: ["232"]
-    //   }, champ)
-    // })
+    champs.map(champ => {
+      createWoven({
+        customer_reference: champ.champion_uuid,
+        email: champ.email,
+        mobile_number: champ.phone,
+        name: champ.champion_name
+      }, champ)
+      createMoneify({
+        accountReference: champ.champion_uuid,
+        customerEmail: champ.email,
+        customerName: champ.champion_name,
+        preferredBanks: ["232"]
+      }, champ)
+    })
     res.status(200).json(champs);
   })
   console.log("function getChamps Run Successfully.");
