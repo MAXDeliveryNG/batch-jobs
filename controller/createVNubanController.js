@@ -26,7 +26,7 @@ async function sendSqlFailureEmail(err) {
     //console.log(response);
   })
   .catch(function (error) {
-    LoggingService.error('Error sending Email ', error);
+    console.log('Error sending Email ', error);
   })
   // console.log("function sendSqlFailureEmail Run Successfully.");
 }
@@ -61,7 +61,7 @@ async function sendVNubanFailureEmail(data, err) {
     //console.log(response);
   })
   .catch(function (error) {
-    LoggingService.error('Error sending Email ', error);
+    console.log('Error sending Email ', error);
   })
   // console.log("function sendVNubanFailureEmail Run Successfully.");
 }
@@ -83,14 +83,12 @@ async function createWoven(payload, championDetail) {
 
     const smsBody = {
       message: notificationMsg,
-      phoneNumbers: championDetail.phone,
-      //phoneNumbers: '+2349012634374',
-      channel: 'generic',
+      phoneNumbers: championDetail.phone,      channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Woven");
 
   } catch (error) {
-    LoggingService.error('Woven creation failure for ' + championDetail  + error);
+    console.log('Woven creation failure for ' + championDetail  + error);
     sendVNubanFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
@@ -120,13 +118,12 @@ async function createMoneify(payload, championDetail) {
     const smsBody = {
       message: notificationMsg,
       phoneNumbers: championDetail.phone,
-      //phoneNumbers: '+2349012634374',
       channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Moneify");
 
   } catch (error) {
-    LoggingService.error('Woven creation failure for ' + championDetail  + error);
+    console.log('Woven creation failure for ' + championDetail  + error);
     sendVNubanFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
@@ -150,11 +147,11 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
       //console.log(response);
     })
     .catch(function (error) {
-      LoggingService.error('Error sending SMS notification ', error);
+      console.log('Error sending SMS notification ', error);
     });
   
   } catch (error) {
-    LoggingService.error('Error sending SMS notification ', error);
+    console.log('Error sending SMS notification ', error);
     sendVNubanSMSFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
@@ -169,7 +166,7 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
 const getChamps = (req, res) => {
   pool.query(getChampionsWithoutVnuban, async (error, results) => {
     if (error) {
-      LoggingService.error('Error running SQL query: ' + error);
+      console.log('Error running SQL query: ' + error);
       sendSqlFailureEmail(error);
       res.status(500).json(error);
     }
