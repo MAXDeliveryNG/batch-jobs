@@ -26,9 +26,9 @@ async function sendSqlFailureEmail(err) {
     //console.log(response);
   })
   .catch(function (error) {
-    console.log(error);
+    LoggingService.error('Error sending Email ', error);
   })
-  console.log("function sendSqlFailureEmail Run Successfully.");
+  // console.log("function sendSqlFailureEmail Run Successfully.");
 }
 
 async function sendVNubanFailureEmail(data, err) {
@@ -61,9 +61,9 @@ async function sendVNubanFailureEmail(data, err) {
     //console.log(response);
   })
   .catch(function (error) {
-    console.log(error);
+    LoggingService.error('Error sending Email ', error);
   })
-  console.log("function sendVNubanFailureEmail Run Successfully.");
+  // console.log("function sendVNubanFailureEmail Run Successfully.");
 }
 
 async function createWoven(payload, championDetail) {
@@ -90,7 +90,7 @@ async function createWoven(payload, championDetail) {
     sendSmsToChampion(smsBody, championDetail, "Woven");
 
   } catch (error) {
-    console.log('Woven creation failure for ' + championDetail  + error);
+    LoggingService.error('Woven creation failure for ' + championDetail  + error);
     sendVNubanFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
@@ -99,7 +99,7 @@ async function createWoven(payload, championDetail) {
       type: "Woven"
     }, error);
   }
-  console.log("function createWoven Run Successfully.");
+  // console.log("function createWoven Run Successfully.");
 }
 
 async function createMoneify(payload, championDetail) {
@@ -126,7 +126,7 @@ async function createMoneify(payload, championDetail) {
     sendSmsToChampion(smsBody, championDetail, "Moneify");
 
   } catch (error) {
-    console.log('Woven creation failure for ' + championDetail  + error);
+    LoggingService.error('Woven creation failure for ' + championDetail  + error);
     sendVNubanFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
@@ -135,7 +135,7 @@ async function createMoneify(payload, championDetail) {
       type: "Moneify"
     }, error);
   }
-  console.log("function createMoneify Run Successfully.");
+  // console.log("function createMoneify Run Successfully.");
 }
 
 async function sendSmsToChampion(smsBody, championDetail, type) {
@@ -150,7 +150,7 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
       //console.log(response);
     })
     .catch(function (error) {
-      console.log(error);
+      LoggingService.error('Error sending SMS notification ', error);
     });
   
   } catch (error) {
@@ -163,21 +163,21 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
       type: type
     }, error);
   }
-  console.log("function sendSmsToChampion Run Successfully.");
+  // console.log("function sendSmsToChampion Run Successfully.");
 }
 
 const getChamps = (req, res) => {
   pool.query(getChampionsWithoutVnuban, async (error, results) => {
     if (error) {
-      console.log('Error running SQL query: ' + error);
+      LoggingService.error('Error running SQL query: ' + error);
       sendSqlFailureEmail(error);
       res.status(500).json(error);
     }
-    console.log("Champion Details Successfully Fetched..")
+    // console.log("Champion Details Successfully Fetched..")
     
     //let champs = results?.rows || [];
     let champs = [results?.rows[0]]
-    console.log(champs)
+    // console.log(champs)
   
     champs.map(champ => {
       createWoven({
@@ -195,7 +195,7 @@ const getChamps = (req, res) => {
     })
     res.status(200).json(champs);
   })
-  console.log("function getChamps Run Successfully.");
+  // console.log("function getChamps Run Successfully.");
 };
 
 export { getChamps };
