@@ -83,8 +83,8 @@ async function createWoven(payload, championDetail) {
 
     const smsBody = {
       message: notificationMsg,
-      //phoneNumbers: championDetail.phone,
-      phoneNumbers: '+2349012634374',
+      phoneNumbers: championDetail.phone,
+      //phoneNumbers: '+2349012634374',
       channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Woven");
@@ -119,8 +119,8 @@ async function createMoneify(payload, championDetail) {
 
     const smsBody = {
       message: notificationMsg,
-      //phoneNumbers: championDetail.phone,
-      phoneNumbers: '+2349012634374',
+      phoneNumbers: championDetail.phone,
+      //phoneNumbers: '+2349012634374',
       channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Moneify");
@@ -175,8 +175,8 @@ const getChamps = (req, res) => {
     }
     // console.log("Champion Details Successfully Fetched..")
     
-    //let champs = results?.rows || [];
-    let champs = [results?.rows[0]]
+    let champs = results?.rows || [];
+    //let champs = [results?.rows[0]]
     // console.log(champs)
   
     champs.map(champ => {
