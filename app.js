@@ -35,7 +35,7 @@ app.get('/', (request, response) => {
 });
 
 app.get('/create-contracts', createContractController);
-app.post('/getchamps', getChamps);
+app.post('/get-champpions', getChamps);
 
 app.post('/v1/create-contract', createContractForVAMSController);
 

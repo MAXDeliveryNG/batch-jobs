@@ -95,8 +95,10 @@ const initCronJob = () => {
       postSlackMessage(message);
     }
   });
-
-  const jobs = schedule.scheduleJob('0 9-21/2 * * 1-6', async () => {
+  //run between 9 AM WAT to 9 PM WAT except Sundays at interval of 2 hours
+  // (minute, hour, day(month), month, day(week)) 
+  const job_time = '0 9-21/2 * * 1-6' 
+  const jobs = schedule.scheduleJob(job_time, async () => {
     try {
       getChamps()
     } catch (error) {

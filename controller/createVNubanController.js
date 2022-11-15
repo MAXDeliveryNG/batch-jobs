@@ -5,6 +5,7 @@ import { getChampionsWithoutVnuban } from "../configs/queryConstants.js";
 import axios from 'axios';
 
 async function sendSqlFailureEmail(err) {
+  try{
   const emailBody = {
     toEmails: [
       'collections@maxdrive.ai', 
@@ -16,22 +17,20 @@ async function sendSqlFailureEmail(err) {
     <p>Regards</p>`
   }
  
-  let url1 = `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
+  let url1 = await `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
   axios.post(url1, emailBody, {headers :{
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${appConfig.authToken}`
   }
 })
-  .then(function (response) {
-    //console.log(response);
-  })
-  .catch(function (error) {
+  }catch(error) {
     console.log('Error sending Email ', error);
-  })
+  }
   // console.log("function sendSqlFailureEmail Run Successfully.");
 }
 
 async function sendVNubanFailureEmail(data, err) {
+  try{
   const emailBody = {
     toEmails: [
       'collections@maxdrive.ai', 
@@ -51,18 +50,15 @@ async function sendVNubanFailureEmail(data, err) {
     <p>${err}</p>
     <p>Regards</p>`
   }
-  let url= `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
+  let url= await `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
   axios.post(url, emailBody,{headers :{
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${appConfig.authToken}`
   }
-  }  )
-  .then(function (response) {
-    //console.log(response);
   })
-  .catch(function (error) {
+  }catch(error) {
     console.log('Error sending Email ', error);
-  })
+  }
   // console.log("function sendVNubanFailureEmail Run Successfully.");
 }
 
@@ -83,7 +79,7 @@ async function createWoven(payload, championDetail) {
 
     const smsBody = {
       message: notificationMsg,
-      phoneNumbers: championDetail.phone,      channel: 'generic',
+      phoneNumbers: championDetail.phone, channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Woven");
 
