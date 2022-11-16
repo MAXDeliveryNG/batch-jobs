@@ -114,15 +114,29 @@ const createContractFromChampion = async (params) => {
   console.log("params", params);
 
   if (!params?.max_champion_id) {
-   return response.status(400).json({status: "error", message: "champion_id id din't provided."});
+   return response.status(400).json({status: "error", message: "max_champion_id id din't provided."});
   }
 
   const output = {};
   try {
     const championsWithoutContract = await getChampionsWithoutContractForVAMS(params);
-    console.log(championsWithoutContract);
+    console.log("championsWithoutContract", championsWithoutContract);
     if (championsWithoutContract?.length === 0) {
-      throw new Error(`No record found with champion_id: ${params?.max_champion_id}`);
+      const message = {
+        champion_id: params?.max_champion_id,
+        lastUpdateTime: new Date().toISOString(),
+        messageInfo: {
+          documentStatus: "Activated",
+          origin: "lams"
+        }
+      }
+      // publish here.
+      await publish({
+        topic: "contract",
+        subject: `Contract creation status for champion id: ${params?.max_champion_id}`,
+        message
+      });
+      return {status:"success", statusCode:200};
     }
     const item = championsWithoutContract[0];
     output.champion_id = item?.champion_uuid;
@@ -141,6 +155,8 @@ const createContractFromChampion = async (params) => {
       "driver_license": item?.driver_license
     };
     console.log("Payload:::", JSON.stringify(payload));
+    console.log("API URL", `${appConfig.apiURL}/contracts`);
+
     try {
       const res = await fetch(`${appConfig.apiURL}/contracts`, {
         method: 'POST',
@@ -155,7 +171,7 @@ const createContractFromChampion = async (params) => {
         output.champion_id = item?.champion_uuid;
 
         const message = {
-          champion_id: item?.champion_uuid,
+          champion_id: item?.max_champion_id,
           lastUpdateTime: new Date().toISOString(),
           messageInfo: {
             documentStatus: "Activated",
