@@ -71,21 +71,21 @@ export function errorHandler(err: Error, res: Response) {
         });
         break;
         case 'NotFoundError':
-          res.status(404).send({
+          res.status(400).send({
             message: err.message,
             type: err.type,
             data: {},
           });
           break;
         case 'ConstraintViolationError':
-          res.status(404).send({
+          res.status(400).send({
             message: err.message,
             type: err.type,
             data: {},
           });
           break;
         case 'UniqueViolationError':
-          res.status(409).send({
+          res.status(400).send({
             message: err.message,
             type: err.type,
             data: {},
@@ -99,7 +99,7 @@ export function errorHandler(err: Error, res: Response) {
           });
           break;
         case 'ForeignKeyViolationError':
-          res.status(409).send({
+          res.status(400).send({
             message: err.message,
             type: err.type,
             data: {},
@@ -120,7 +120,7 @@ export function errorHandler(err: Error, res: Response) {
           });
           break;
         case 'DBError':
-          res.status(500).send({
+          res.status(400).send({
             message: err.message,
             type: err.type,
             data: {},
@@ -136,6 +136,7 @@ export function errorHandler(err: Error, res: Response) {
     }
   } 
 }
+
 /*
 export type IErrorObject = {
   name: 'ValidationError';

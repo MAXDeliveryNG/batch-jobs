@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
 
-import { getChampionsWithoutContractForVAMS } from "../model/collectionModel.js";
-import {publish, subscribe, unsubscribe, confirmSubscription} from "../utils/aws-sns.js";
-import appConfig from '../configs/appConfig.js';
+import { getChampionsWithoutContractForVAMS } from "../model/collectionModel";
+import {publish, subscribe, unsubscribe, confirmSubscription} from "../utils/aws-sns";
+import appConfig from '../configs/appConfig';
 
 const createContractForVAMSController = async (request, response) => {
   const {body} = request;
@@ -14,14 +14,14 @@ const createContractForVAMSController = async (request, response) => {
 
   console.log(body);
 
-  const output = {};
+  const output:any = {};
   try {
     const championsWithoutContract = await getChampionsWithoutContractForVAMS(body);
     console.log(championsWithoutContract);
     if (championsWithoutContract?.length === 0) {
       throw new Error(`No record found with champion_id: ${champion_id}`);
     }
-    const item = championsWithoutContract[0];
+    const item:any = championsWithoutContract[0];
     output.champion_id = item?.champion_uuid;
     output.vehicle_id = item?.vehicle_id;
 
@@ -44,7 +44,7 @@ const createContractForVAMSController = async (request, response) => {
         headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${appConfig.authToken}` },
         body: JSON.stringify(payload),
       });
-      const jsonRes = await res.json();
+      const jsonRes:any = await res.json();
       if (jsonRes.status === "success") {
         output.status = "success";
         output.message = "Contract created successfully."
@@ -75,7 +75,7 @@ const createContractForVAMSController = async (request, response) => {
 };
 
 const subscribeToSNSTopicController = async (request, response) => {
-  let output = {};
+  let output:any = {};
   try {
     const {body} = request;
     const {topic, endpoint, protocol} = body;
@@ -93,7 +93,7 @@ const subscribeToSNSTopicController = async (request, response) => {
 };
 
 const unsubscribeToSNSTopicController = async (request, response) => {
-  let output = {};
+  let output:any = {};
   try {
     const {body} = request;
     const { subscriptionArn } = body;
@@ -110,14 +110,14 @@ const unsubscribeToSNSTopicController = async (request, response) => {
   }
 };
 
-const createContractFromChampion = async (params) => {
+const createContractFromChampion = async (params:any) => {
   console.log("params", params);
 
   if (!params?.max_champion_id) {
-   return response.status(400).json({status: "error", message: "champion_id id din't provided."});
+   return params.response.status(400).json({status: "error", message: "champion_id id din't provided."});
   }
 
-  const output = {};
+  const output:any = {};
   try {
     const championsWithoutContract = await getChampionsWithoutContractForVAMS(params);
     console.log(championsWithoutContract);
@@ -147,7 +147,7 @@ const createContractFromChampion = async (params) => {
         headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${appConfig.authToken}` },
         body: JSON.stringify(payload),
       });
-      const jsonRes = await res.json();
+      const jsonRes:any = await res.json();
       if (jsonRes.status === "success") {
         output.status = "success";
         output.message = "Contract created successfully."

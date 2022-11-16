@@ -1,6 +1,6 @@
 
-import pool from "../configs/connection.js";
-import {getContractsQuery, getChampionsWithoutContractQuery, getChampionsWithoutContractVAMSQuery} from "../configs/queryConstants.js";
+import pool from "../configs/connection";
+import {getContractsQuery, getChampionsWithoutContractQuery, getChampionsWithoutContractVAMSQuery} from "../configs/queryConstants";
 
 const getContracts = (request, response) => {
   pool.query(getContractsQuery, (error, results) => {

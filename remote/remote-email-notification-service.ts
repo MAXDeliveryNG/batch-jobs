@@ -1,5 +1,5 @@
 import { HttpService } from '../services/http-service';
-import appConfig from '../configs/appConfig.js';
+import appConfig from '../configs/appConfig';
 
 enum AttachmentTypeEnum {
   csv = 'csv',

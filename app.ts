@@ -1,23 +1,22 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import dotenv from "dotenv";
+const express = require("express");
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv")
 import schedule from "node-schedule";
 import fetch from "node-fetch";
-
-import initCronJob from "./cronjob.js";
+import initCronJob from "./cronjob";
 
 dotenv.config();
 
-import {createContractController} from "./controller/createContractController.js";
-import {getChamps} from "./controller/createVNubanController.js";
+import {createContractController} from "./controller/createContractController";
+import {getChamps} from "./controller/createVNubanController";
 import {
       createContractForVAMSController,
       subscribeToSNSTopicController, 
       createContractFromTopicController,
       unsubscribeToSNSTopicController
-    } from "./controller/createContractForVAMSController.js";
+    } from "./controller/createContractForVAMSController";
 
-import appConfig from './configs/appConfig.js';
+import appConfig from './configs/appConfig';
 
 const app = express();
 const port = appConfig.PORT;

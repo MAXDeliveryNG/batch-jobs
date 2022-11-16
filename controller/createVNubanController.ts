@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
-import pool from "../configs/connection.js"
-import appConfig from '../configs/appConfig.js';
-import { getChampionsWithoutVnuban } from "../configs/queryConstants.js";
+import pool from "../configs/connection"
+import appConfig from '../configs/appConfig';
+import { getChampionsWithoutVnuban } from "../configs/queryConstants";
 import axios from 'axios';
 
 async function sendSqlFailureEmail(err) {
@@ -72,7 +72,7 @@ async function createWoven(payload, championDetail) {
         'Authorization': `Bearer ${appConfig.authToken}`
       }
     });
-    const res = await response.json();
+    const res:any = await response.json();
     //console.log(res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Woven A/C has been created. ${res.data}`;
@@ -106,7 +106,7 @@ async function createMoneify(payload, championDetail) {
         'Authorization': `Bearer ${appConfig.authToken}`
       }
     });
-    const res = await response.json();
+    const res:any = await response.json();
     //console.log(res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Moneify A/C has been created. ${res.data}`;
@@ -131,7 +131,7 @@ async function createMoneify(payload, championDetail) {
   // console.log("function createMoneify Run Successfully.");
 }
 
-async function sendSmsToChampion(smsBody, championDetail, type) {
+async function sendSmsToChampion(smsBody, championDetail:any, type) {
   try {
     const url = `${appConfig.NOTIFICATION_PUSH_URL}/v1/sms/send`;
 
@@ -148,7 +148,7 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
   
   } catch (error) {
     console.log('Error sending SMS notification ', error);
-    sendVNubanSMSFailureEmail({
+    sendVNubanFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
       champion_email: championDetail.email,
@@ -159,12 +159,11 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
   // console.log("function sendSmsToChampion Run Successfully.");
 }
 
-const getChamps = (req, res) => {
+const getChamps = () => {
   pool.query(getChampionsWithoutVnuban, async (error, results) => {
     if (error) {
       console.log('Error running SQL query: ' + error);
       sendSqlFailureEmail(error);
-      res.status(500).json(error);
     }
     // console.log("Champion Details Successfully Fetched..")
     
@@ -186,7 +185,6 @@ const getChamps = (req, res) => {
         preferredBanks: ["232"]
       }, champ)
     })
-    res.status(200).json(champs);
   })
   // console.log("function getChamps Run Successfully.");
 };

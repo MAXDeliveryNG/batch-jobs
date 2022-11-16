@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
-import { getChampionsWithoutContract } from "../model/collectionModel.js";
-import appConfig from '../configs/appConfig.js';
+import { getChampionsWithoutContract } from "../model/collectionModel";
+import appConfig from '../configs/appConfig';
 
 const createContractController = async (request, response) => {
   const {query} = request;
@@ -30,7 +30,7 @@ const createContractController = async (request, response) => {
     console.log("noOfRecords to be process:: ", noOfRecords);
     for (let i=0; i<noOfRecords; i++) {
       const item = championsWithoutContract[i];
-      const output = {
+      const output:any = {
         "champion_id": item?.champion_uuid,
         "vehicle_id": item?.vehicle_id,
       }
@@ -53,7 +53,7 @@ const createContractController = async (request, response) => {
           headers: { 'Content-type': 'application/json', 'Authorization': `Bearer ${appConfig.authToken}` },
           body: JSON.stringify(payload),
         });
-        const jsonRes = await res.json();
+        const jsonRes:any = await res.json();
         if (jsonRes.status === "success") {
           output.status = "Success"
         } else {
