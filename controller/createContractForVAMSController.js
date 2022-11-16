@@ -12,8 +12,6 @@ const createContractForVAMSController = async (request, response) => {
    return response.status(400).json({status: "error", message: "champion_id id din't provided."});
   }
 
-  console.log(body);
-
   const output = {};
   try {
     const championsWithoutContract = await getChampionsWithoutContractForVAMS(body);
@@ -114,7 +112,7 @@ const createContractFromChampion = async (params) => {
   console.log("params", params);
 
   if (!params?.max_champion_id) {
-   return response.status(400).json({status: "error", message: "max_champion_id id din't provided."});
+   return response.status(200).json({status: "error", message: "max_champion_id id din't provided."});
   }
 
   const output = {};
@@ -155,8 +153,6 @@ const createContractFromChampion = async (params) => {
       "driver_license": item?.driver_license
     };
     console.log("Payload:::", JSON.stringify(payload));
-    console.log("API URL", `${appConfig.apiURL}/contracts`);
-
     try {
       const res = await fetch(`${appConfig.apiURL}/contracts`, {
         method: 'POST',
@@ -194,9 +190,8 @@ const createContractFromChampion = async (params) => {
   } catch (e) {
     output.status = "error"
     output.message = e.message;
-    output.statusCode = 500;
+    output.statusCode = 200;
   } finally {
-    console.log(output);
     return output;
   }
 }
@@ -205,7 +200,7 @@ const createContractFromTopicController = async (request, response) => {
   let output = {};
   try {
     const requestData = JSON.parse(request.body);
-    console.log(requestData);
+    console.log("requestData", requestData);
     if (requestData?.Type === "SubscriptionConfirmation") {
       const confirmRes = await fetch(requestData?.SubscribeURL);
       if (confirmRes.status==200) {
@@ -216,13 +211,11 @@ const createContractFromTopicController = async (request, response) => {
     }
     if (requestData?.Type === "Notification") {
       const {champion_id, vehicle_id} = JSON.parse(requestData?.Message);
-      console.log(champion_id, vehicle_id, "****************")
       const data  = await createContractFromChampion({max_champion_id: champion_id, max_vehicle_id: vehicle_id});
-      console.log("data", data);
       output = {...data}
     }
   } catch(e) {
-    output={status: "error", errorMessage: e.message, statusCode: 500}
+    output={status: "error", errorMessage: e.message, statusCode: 200}
   } finally {
     console.log(output);
     // send 200 ok response otherwise SNS will keep triggering that published message again and again
