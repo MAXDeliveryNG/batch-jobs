@@ -1,6 +1,6 @@
 
 // Load the AWS SDK for Node.js
-import AWS from 'aws-sdk';
+const AWS = require("aws-sdk")
 
 import awsConfig from "./awsConfig.js";
 

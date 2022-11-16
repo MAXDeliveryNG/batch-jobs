@@ -1,10 +1,11 @@
 import fetch from "node-fetch";
-import pool from "../configs/connection.js"
-import appConfig from '../configs/appConfig.js';
-import { getChampionsWithoutVnuban } from "../configs/queryConstants.js";
+import pool from "../configs/connection"
+import appConfig from '../configs/appConfig';
+import { getChampionsWithoutVnuban } from "../configs/queryConstants";
 import axios from 'axios';
 
 async function sendSqlFailureEmail(err) {
+  try{
   const emailBody = {
     toEmails: [
       'collections@maxdrive.ai', 
@@ -16,22 +17,20 @@ async function sendSqlFailureEmail(err) {
     <p>Regards</p>`
   }
  
-  let url1 = `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
+  let url1 = await `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
   axios.post(url1, emailBody, {headers :{
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${appConfig.authToken}`
   }
 })
-  .then(function (response) {
-    //console.log(response);
-  })
-  .catch(function (error) {
+  }catch(error) {
     console.log('Error sending Email ', error);
-  })
+  }
   // console.log("function sendSqlFailureEmail Run Successfully.");
 }
 
 async function sendVNubanFailureEmail(data, err) {
+  try{
   const emailBody = {
     toEmails: [
       'collections@maxdrive.ai', 
@@ -51,18 +50,15 @@ async function sendVNubanFailureEmail(data, err) {
     <p>${err}</p>
     <p>Regards</p>`
   }
-  let url= `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
+  let url= await `${appConfig.NOTIFICATION_PUSH_URL}/v1/email/send`
   axios.post(url, emailBody,{headers :{
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${appConfig.authToken}`
   }
-  }  )
-  .then(function (response) {
-    //console.log(response);
   })
-  .catch(function (error) {
+  }catch(error) {
     console.log('Error sending Email ', error);
-  })
+  }
   // console.log("function sendVNubanFailureEmail Run Successfully.");
 }
 
@@ -76,14 +72,14 @@ async function createWoven(payload, championDetail) {
         'Authorization': `Bearer ${appConfig.authToken}`
       }
     });
-    const res = await response.json();
+    const res:any = await response.json();
     //console.log(res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Woven A/C has been created. ${res.data}`;
 
     const smsBody = {
       message: notificationMsg,
-      phoneNumbers: championDetail.phone,      channel: 'generic',
+      phoneNumbers: championDetail.phone, channel: 'generic',
     };
     sendSmsToChampion(smsBody, championDetail, "Woven");
 
@@ -110,7 +106,7 @@ async function createMoneify(payload, championDetail) {
         'Authorization': `Bearer ${appConfig.authToken}`
       }
     });
-    const res = await response.json();
+    const res:any = await response.json();
     //console.log(res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Moneify A/C has been created. ${res.data}`;
@@ -135,7 +131,7 @@ async function createMoneify(payload, championDetail) {
   // console.log("function createMoneify Run Successfully.");
 }
 
-async function sendSmsToChampion(smsBody, championDetail, type) {
+async function sendSmsToChampion(smsBody, championDetail:any, type) {
   try {
     const url = `${appConfig.NOTIFICATION_PUSH_URL}/v1/sms/send`;
 
@@ -152,7 +148,7 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
   
   } catch (error) {
     console.log('Error sending SMS notification ', error);
-    sendVNubanSMSFailureEmail({
+    sendVNubanFailureEmail({
       champion_uuid: championDetail.champion_uuid,
       champion_name: championDetail.champion_name,
       champion_email: championDetail.email,
@@ -163,12 +159,11 @@ async function sendSmsToChampion(smsBody, championDetail, type) {
   // console.log("function sendSmsToChampion Run Successfully.");
 }
 
-const getChamps = (req, res) => {
+const getChamps = () => {
   pool.query(getChampionsWithoutVnuban, async (error, results) => {
     if (error) {
       console.log('Error running SQL query: ' + error);
       sendSqlFailureEmail(error);
-      res.status(500).json(error);
     }
     // console.log("Champion Details Successfully Fetched..")
     
@@ -190,7 +185,6 @@ const getChamps = (req, res) => {
         preferredBanks: ["232"]
       }, champ)
     })
-    res.status(200).json(champs);
   })
   // console.log("function getChamps Run Successfully.");
 };

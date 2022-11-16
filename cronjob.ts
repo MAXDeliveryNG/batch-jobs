@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import schedule from "node-schedule";
-import { getChamps } from "./controller/createVNubanController.js";
+import { getChamps } from "./controller/createVNubanController";
 
 const postSlackMessage = async (message) => {
 
@@ -81,7 +81,7 @@ const initCronJob = () => {
       result:""
     };
     try {
-      const result = await fetch(`http://localhost:4020/create-contracts?days=30&noOfRecords=10`);
+      const result:any = await fetch(`http://localhost:4020/create-contracts?days=30&noOfRecords=10`);
       const responseJSON = await result.json();
       message.status="Success";
       message.totalNoOfRecordProcessed = responseJSON?.length || 0;
@@ -95,8 +95,10 @@ const initCronJob = () => {
       postSlackMessage(message);
     }
   });
-
-  const jobs = schedule.scheduleJob('0 9-21/2 * * 1-6', async () => {
+  //run between 9 AM WAT to 9 PM WAT except Sundays at interval of 2 hours
+  // (minute, hour, day(month), month, day(week)) 
+  const job_time = '0 9-21/2 * * 1-6' 
+  const jobs = schedule.scheduleJob(job_time, async () => {
     try {
       getChamps()
     } catch (error) {
