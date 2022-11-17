@@ -87,5 +87,5 @@ process.on('SIGINT', shutDown);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
-  //initCronJob();
+  initCronJob();
 }); 
