@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import schedule from "node-schedule";
 import fetch from "node-fetch";
 
-import initCronJob from "./cronjob.js";
+import {initCronJob, initVNubanCronJob} from "./cronjob.js";
 
 dotenv.config();
 
@@ -16,9 +16,9 @@ import {
       unsubscribeToSNSTopicController
     } from "./controller/createContractForVAMSController.js";
 
-import appConfig from './configs/appConfig.js';
+import createVNuban from "./controller/createVNubanController.js";
 
-console.log(appConfig);
+import appConfig from './configs/appConfig.js';
 
 const app = express();
 const port = appConfig.PORT;
@@ -42,6 +42,8 @@ app.post('/v1/create-contract', createContractForVAMSController);
 app.post('/v1/sns-topic/subscribe', subscribeToSNSTopicController);
 app.post('/v1/sns-topic/unsubscribe', unsubscribeToSNSTopicController);
 app.post('/v1/web-hook/create-contract-from-topic', bodyParser.text(), createContractFromTopicController);
+
+app.post('/v1/vnuban/create', createVNuban);
 
 app.get('/test-slack', async (req, res) => {
   let resBody="";
@@ -87,5 +89,6 @@ process.on('SIGINT', shutDown);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
-  //initCronJob();
+  initCronJob();
+  initVNubanCronJob();
 }); 
