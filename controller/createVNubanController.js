@@ -74,7 +74,6 @@ async function createWoven(payload, championDetail) {
       }
     });
     const res = await response.json();
-    console.log("Woven-> ", res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Woven A/C has been created. ${res.data}`;
 
@@ -108,7 +107,6 @@ async function createMoneify(payload, championDetail) {
       }
     });
     const res = await response.json();
-    console.log("Moneify-> ", res);
 
     const notificationMsg = `Dear ${championDetail.champion_name}, your Moneify A/C has been created. ${res.data}`;
 
