@@ -1,9 +1,10 @@
 export default {
   awsEndpoint: "",
   topics: {
-    contract: "arn:aws:sns:eu-west-2:048464312507:Contract",
-    champion: "arn:aws:sns:eu-west-2:048464312507:Champion"
-  }
+    contract: process?.env?.AWS_TOPIC_ARN_CONTRACT,
+    champion: process?.env?.AWS_TOPIC_ARN_CHAMPION
+  },
+  awsRegion: process?.env?.AWS_REGION
 };
 
 

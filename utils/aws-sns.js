@@ -5,7 +5,7 @@ import AWS from 'aws-sdk';
 import awsConfig from "./awsConfig.js";
 
 // Set region
-AWS.config.update({region: 'eu-west-2'});
+AWS.config.update({region: awsConfig.awsRegion});
 
 const sns = new AWS.SNS();
 
