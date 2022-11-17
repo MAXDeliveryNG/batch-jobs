@@ -32,6 +32,9 @@ API_URL=https://api.staging.max.ng/collection/v1
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
+AWS_TOPIC_ARN_CHAMPION=""
+AWS_TOPIC_ARN_CONTRACT=""
+AWS_REGION=""
 NOTIFICATION_PUSH_URL=http://api.staging.max.ng/messaging_notification_push
 ```
 ⚠️ Note that authToken is subjected to change at times and also do not commit the .env file
