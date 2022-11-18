@@ -13,7 +13,7 @@ async function sendSqlFailureEmail(err) {
   try {
     const emailBody = {
       toEmails: failureEmailReceivers,
-      subject: (appConfig.ENVIRONMENT == 'production' ? 'Production' : 'Staging') + ' - vNuban Creation Failure',
+      subject: (appConfig.ENVIRONMENT != 'production' ? 'Test email' : '') + ' - vNuban Creation Failure',
       htmlBody: `<p>Hello Team, <br/> Database error for vNuban creation.</p>
       <p>${err}</p>
       <p>Regards</p>`
@@ -34,7 +34,7 @@ async function sendVNubanFailureEmail(data, err) {
   try {
     const emailBody = {
       toEmails: failureEmailReceivers,
-      subject: (appConfig.ENVIRONMENT == 'production' ? 'Production' : 'Staging') + ' - vNuban Creation Failure',
+      subject: (appConfig.ENVIRONMENT != 'production' ? 'Test email' : '') + ' - vNuban Creation Failure',
       htmlBody: `<p>Hello Team, <br/> The vNuban creation has failed for below champion.</p>
       <p>
         <ul>
