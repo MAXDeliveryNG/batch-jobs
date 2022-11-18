@@ -4,19 +4,16 @@ import appConfig from '../configs/appConfig.js';
 import { getChampionsWithoutVnuban } from "../configs/queryConstants.js";
 import axios from 'axios';
 
-let failureEmailReceivers = [];
+let failureEmailReceivers = appConfig.FAILURE_STAG_EMAILS.split(",");
 if (appConfig.ENVIRONMENT == 'production') {
-  failureEmailReceivers = [
-    'collections@maxdrive.ai', 
-    'props-email-notification@maxdrive.ai',
-  ];
+  failureEmailReceivers = appConfig.FAILURE_PROD_EMAILS.split(",");
 }
 
 async function sendSqlFailureEmail(err) {
   try {
     const emailBody = {
       toEmails: failureEmailReceivers,
-      subject: 'vNuban Creation Failure',
+      subject: (appConfig.ENVIRONMENT == 'production' ? 'Production' : 'Staging') + ' - vNuban Creation Failure',
       htmlBody: `<p>Hello Team, <br/> Database error for vNuban creation.</p>
       <p>${err}</p>
       <p>Regards</p>`
@@ -37,7 +34,7 @@ async function sendVNubanFailureEmail(data, err) {
   try {
     const emailBody = {
       toEmails: failureEmailReceivers,
-      subject: 'vNuban Creation Failure',
+      subject: (appConfig.ENVIRONMENT == 'production' ? 'Production' : 'Staging') + ' - vNuban Creation Failure',
       htmlBody: `<p>Hello Team, <br/> The vNuban creation has failed for below champion.</p>
       <p>
         <ul>
