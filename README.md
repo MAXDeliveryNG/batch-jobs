@@ -35,6 +35,9 @@ AWS_SECRET_ACCESS_KEY=
 AWS_TOPIC_ARN_CHAMPION=""
 AWS_TOPIC_ARN_CONTRACT=""
 AWS_REGION=""
+NOTIFICATION_PUSH_URL=http://api.staging.max.ng/messaging_notification_push
+FAILURE_PROD_EMAILS=collections@maxdrive.ai,props-email-notification@maxdrive.ai
+FAILURE_STAG_EMAILS=props-email-notification@maxdrive.ai
 ```
 ⚠️ Note that authToken is subjected to change at times and also do not commit the .env file
 

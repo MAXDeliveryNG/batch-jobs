@@ -122,6 +122,7 @@ const createContractFromChampion = async (params) => {
     if (championsWithoutContract?.length === 0) {
       const message = {
         champion_id: params?.max_champion_id,
+        vehicle_id: params?.max_vehicle_id,
         lastUpdateTime: new Date().toISOString(),
         messageInfo: {
           documentStatus: "Activated",
@@ -168,6 +169,7 @@ const createContractFromChampion = async (params) => {
 
         const message = {
           champion_id: item?.max_champion_id,
+          vehicle_id: params?.max_vehicle_id,
           lastUpdateTime: new Date().toISOString(),
           messageInfo: {
             documentStatus: "Activated",
