@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import schedule from "node-schedule";
 import createVNuban from "./controller/createVNubanController.js";
+import appConfig from './configs/appConfig.js';
 
 const postSlackMessage = async (message) => {
 
@@ -100,7 +101,13 @@ const initCronJob = () => {
 const initVNubanCronJob = () => {
   //run between 9 AM WAT to 9 PM WAT except Sundays at interval of 2 hours
   // (minute, hour, day(month), month, day(week)) 
-  const jobInterval = '0 9-21/2 * * 1-6' 
+  let jobInterval = '0 9-21/2 * * 1-6';
+  
+  if (appConfig.ENVIRONMENT != 'production') {
+    // In staging, run every 5 minutes
+    jobInterval = '*/5 * * * *';
+  }
+
   const job1 = schedule.scheduleJob(jobInterval, () => {
     try {
       createVNuban()

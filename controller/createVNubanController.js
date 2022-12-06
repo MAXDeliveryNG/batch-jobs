@@ -172,7 +172,13 @@ const createVNuban = (req, res) => {
         preferredBanks: ["232"]
       }, champ)
     })
-    res.status(200).json(champs);
+    
+    if (appConfig.ENVIRONMENT != 'production') {
+      console.log("vNuban creation started");
+    }
+    if (req) {
+      res.status(200).json(champs);
+    }
   })
 };
 
