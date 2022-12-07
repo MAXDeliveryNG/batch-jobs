@@ -4,10 +4,6 @@ import AWS from 'aws-sdk';
 
 import awsConfig from "./awsConfig.js";
 
-
-console.log("AWS_TOPIC_ARN_CONTRACT", awsConfig?.topics?.contract);
-console.log("AWS_REGION", awsConfig?.awsRegion);
-
 // Set region
 AWS.config.update({region: awsConfig.awsRegion});
 
