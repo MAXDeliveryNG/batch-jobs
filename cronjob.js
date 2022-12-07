@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
 import schedule from "node-schedule";
-import createVNuban from "./controller/createVNubanController.js";
 
 const postSlackMessage = async (message) => {
 
@@ -97,17 +96,4 @@ const initCronJob = () => {
   });
 };
 
-const initVNubanCronJob = () => {
-  //run between 9 AM WAT to 9 PM WAT except Sundays at interval of 2 hours
-  // (minute, hour, day(month), month, day(week)) 
-  const jobInterval = '0 9-21/2 * * 1-6' 
-  const job1 = schedule.scheduleJob(jobInterval, () => {
-    try {
-      createVNuban()
-    } catch (error) {
-      console.log("Error scheduling cron job for vNuban ", error);
-    }
-  })
-};
-
-export {initCronJob, initVNubanCronJob};
+export default initCronJob;
