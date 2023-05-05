@@ -112,7 +112,7 @@ workflows:
         filters:
           branches:
             only:
-              - dev
+    #          - dev
               - staging
               - main
     - deploy:
